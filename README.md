@@ -10,7 +10,7 @@ Matlab parfor work progress display program
 > end \
 > p.stop; 
 
-Run the above code, the command line window will display: \
+Run the above code, the command line window will display: 
 > 100%[===========] Executed in 1.5339s, finished.
 
 ## Note:
