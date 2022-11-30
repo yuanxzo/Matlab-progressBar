@@ -8,7 +8,7 @@ Matlab parfor work progress display program
 >  pause(1); % Replace with real code \
 >  p.progress; %#ok<PFBNS>  \
 > end \
-> p.stop; \
+> p.stop; 
 
 Run the above code, the command line window will display: \
 100%[===========] Executed in 1.5339s, finished.
