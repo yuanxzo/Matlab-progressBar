@@ -5,8 +5,8 @@ Matlab parfor work progress display program
 > N = 10; \
 > p = progressBar(N); \
 > parfor i=1:N \
->  pause(1); % Replace with real code \
->  p.progress; %#ok<PFBNS>  \
+>   pause(1); % Replace with real code \
+>   p.progress; %#ok<PFBNS>  \
 > end \
 > p.stop; 
 
