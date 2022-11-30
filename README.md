@@ -2,8 +2,8 @@
 Matlab parfor work progress display program
 
 ## Example
-> N = 10; 
-> p = progressBar(N); \n
+> N = 10; \
+> p = progressBar(N); \
 
 > parfor i=1:N
 >  pause(1); % Replace with real code
