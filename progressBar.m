@@ -63,22 +63,26 @@ classdef progressBar < handle
 
     properties
         fname
+        pname
         width
         times
         state
     end
     
     methods
-        function obj = progressBar(N)
+        function obj = progressBar(N,varargin)
             if N<=1
                 obj.state=-1;
                 return
             end
-    
+            p = inputParser;
+            addOptional(p,'pname','_')  % progress name, must be a string, default is empty
+            p.parse(varargin{:});
+            obj.pname=p.Results.pname;disp(obj.pname)
+            
             obj.width = 10; % Width of progress bar
 
             obj.fname = 'progressbar.temp';
-            
             f = fopen(obj.fname, 'w');
             if f<0
                 error('Do you have write permissions for %s?', pwd);
@@ -86,7 +90,7 @@ classdef progressBar < handle
             fprintf(f, '%d\n', N);
             fclose(f);
             obj.times=tic;
-            disp(['  0%[>', repmat(' ', 1, obj.width), ']']); 
+            disp(['  0% ',obj.pname,'[>', repmat(' ', 1, obj.width), ']']); 
         end
         
         function percent = progress(obj)
@@ -108,7 +112,7 @@ classdef progressBar < handle
             percent = (length(progress)-1)/progress(1)*100;
 
             perc = sprintf('%3.0f%%', percent); % 4 characters wide, percentage
-            disp([repmat(char(8), 1, (obj.width+9)), newline, perc, '[', repmat('=', 1, round(percent*obj.width/100)), '>', repmat(' ', 1, obj.width - round(percent*obj.width/100)), ']']);         
+            disp([repmat(char(8), 1, (obj.width+9+length(obj.pname)+1)), newline, perc,' ',obj.pname,'[', repmat('=', 1, round(percent*obj.width/100)), '>', repmat(' ', 1, obj.width - round(percent*obj.width/100)), ']']);         
         end
         
         function percent = stop(obj)
@@ -119,7 +123,7 @@ classdef progressBar < handle
             delete(obj.fname);     
             percent = 100;
 
-            disp([repmat(char(8), 1, (obj.width+9)), newline, '100%[', repmat('=', 1, obj.width+1), ']',' Executed in ',num2str(toc(obj.times)),'s, finished.']);
+            disp([repmat(char(8), 1, (obj.width+9+length(obj.pname)+1)), newline, '100% ',obj.pname,'[', repmat('=', 1, obj.width+1), ']',' Executed in ',num2str(toc(obj.times)),'s.']);
         end
     end
 end
