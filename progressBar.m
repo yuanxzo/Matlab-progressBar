@@ -76,7 +76,7 @@ classdef progressBar < handle
                 return
             end
             p = inputParser;
-            addOptional(p,'pname','UNNAMED PROGRESS')  % progress name, must be a string, default is empty
+            addOptional(p,'pname','UNNAMED PROGRESS')  % progress name, must be a string, default is 'UNNAMED PROGRESS'
             p.parse(varargin{:});
             obj.pname=p.Results.pname;
             
