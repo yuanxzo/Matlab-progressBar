@@ -33,11 +33,11 @@ classdef progressBar < handle
     %   workers cannot communicate with one another so there is no simple way
     %   to know which iterations have finished and which haven't.
     %
-    % METHODS:  progressBar(num); constructs an object and initializes the progress monitor 
-    %                             for a set of N upcoming calculations.
+    % METHODS:  progressBar(N); constructs an object and initializes the progress monitor 
+    %                           for a set of N upcoming calculations.
     %           progress(); updates the progress inside your loop and
     %                       displays an updated progress bar.
-    %           stop(); deletes progressbar_(random_number).txt and finalizes the 
+    %           stop(); deletes progressbar.temp and finalizes the 
     %                   progress bar.
     %
     % EXAMPLE: 
