@@ -90,7 +90,7 @@ classdef progressBar < handle
             fprintf(f, '%d\n', N);
             fclose(f);
             obj.times=tic;
-            disp(['  0% [>', repmat(' ', 1, obj.width), ']',obj.pname]); 
+            disp(['  0%[>', repmat(' ', 1, obj.width), ']',obj.pname]); 
         end
         
         function percent = progress(obj)
@@ -112,7 +112,7 @@ classdef progressBar < handle
             percent = (length(progress)-1)/progress(1)*100;
 
             perc = sprintf('%3.0f%%', percent); % 4 characters wide, percentage
-            disp([repmat(char(8), 1, (obj.width+10+length(obj.pname))), newline, perc,' [', repmat('=', 1, round(percent*obj.width/100)), '>', repmat(' ', 1, obj.width - round(percent*obj.width/100)), ']',obj.pname]);         
+            disp([repmat(char(8), 1, (obj.width+9+length(obj.pname))), newline, perc,'[', repmat('=', 1, round(percent*obj.width/100)), '>', repmat(' ', 1, obj.width - round(percent*obj.width/100)), ']',obj.pname]);         
         end
         
         function percent = stop(obj)
@@ -123,7 +123,7 @@ classdef progressBar < handle
             delete(obj.fname);     
             percent = 100;
 
-            disp([repmat(char(8), 1, (obj.width+10+length(obj.pname))), newline, '100% [', repmat('=', 1, obj.width+1), ']',obj.pname,' Executed in ',num2str(toc(obj.times)),'s.']);
+            disp([repmat(char(8), 1, (obj.width+9+length(obj.pname))), newline, '100%[', repmat('=', 1, obj.width+1), ']',obj.pname,'. Executed in ',num2str(toc(obj.times)),'s.']);
         end
     end
 end
