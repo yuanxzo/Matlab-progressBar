@@ -44,13 +44,13 @@ classdef progressBar < handle
     %           N = 100;
     %           p = progressBar(N);
     %           parfor i=1:N
-    %              pause(0.1);            % Replace with real code
+    %              pause(0.1);             % Replace with real code
     %              p.progress; %#ok<PFBNS> % Also percent = p.progress;
     %           end
     %           p.stop; % Also percent = p.stop;
     %
-    % To suppress output call constructor with optional parameter 'verbose':
-    %       p = progressbar(N,'verbose',0);
+    % To suppress running of this class and output with input N<=1:
+    %       p = progressBar(N);
     %
     % To get percentage numbers from progress and stop methods call them like:
     %       percent = p.progress;
@@ -64,21 +64,16 @@ classdef progressBar < handle
     properties
         fname
         width
-        verbose
         times
         state
     end
     
     methods
-        function obj = progressBar(N, varargin)
+        function obj = progressBar(N)
             if N<=1
                 obj.state=-1;
                 return
             end
-            p = inputParser;
-            p.addParameter('verbose',1,@isscalar);
-            p.parse(varargin{:});
-            obj.verbose = p.Results.verbose;
     
             obj.width = 10; % Width of progress bar
 
@@ -88,14 +83,15 @@ classdef progressBar < handle
             if f<0
                 error('Do you have write permissions for %s?', pwd);
             end
-            fprintf(f, '%d\n', N); % Save N at the top of progress.txt
+            fprintf(f, '%d\n', N);
             fclose(f);
             obj.times=tic;
-            if obj.verbose; disp(['  0%[>', repmat(' ', 1, obj.width), ']']); end
+            disp(['  0%[>', repmat(' ', 1, obj.width), ']']); 
         end
         
         function percent = progress(obj)
             if obj.state==-1
+                percent=[];
                 return
             end
             if ~exist(obj.fname, 'file')
@@ -111,22 +107,19 @@ classdef progressBar < handle
             fclose(f);
             percent = (length(progress)-1)/progress(1)*100;
 
-            if obj.verbose
-                perc = sprintf('%3.0f%%', percent); % 4 characters wide, percentage
-                disp([repmat(char(8), 1, (obj.width+9)), newline, perc, '[', repmat('=', 1, round(percent*obj.width/100)), '>', repmat(' ', 1, obj.width - round(percent*obj.width/100)), ']']);
-            end           
+            perc = sprintf('%3.0f%%', percent); % 4 characters wide, percentage
+            disp([repmat(char(8), 1, (obj.width+9)), newline, perc, '[', repmat('=', 1, round(percent*obj.width/100)), '>', repmat(' ', 1, obj.width - round(percent*obj.width/100)), ']']);         
         end
         
         function percent = stop(obj)
             if obj.state==-1
+                percent=[];
                 return
             end
             delete(obj.fname);     
             percent = 100;
 
-            if obj.verbose
-                disp([repmat(char(8), 1, (obj.width+9)), newline, '100%[', repmat('=', 1, obj.width+1), ']',' Executed in ',num2str(toc(obj.times)),'s, finished.']);
-            end
+            disp([repmat(char(8), 1, (obj.width+9)), newline, '100%[', repmat('=', 1, obj.width+1), ']',' Executed in ',num2str(toc(obj.times)),'s, finished.']);
         end
     end
 end
