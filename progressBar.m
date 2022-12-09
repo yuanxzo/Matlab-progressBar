@@ -62,7 +62,6 @@ classdef progressBar < handle
     %           parfor_progress written by Jeremy Scheff    
 
     properties
-        fname
         pname
         width
         times
@@ -82,8 +81,7 @@ classdef progressBar < handle
             
             obj.width = 10; % Width of progress bar
 
-            obj.fname = 'progressbar.temp';
-            f = fopen(obj.fname, 'w');
+            f = fopen('progressbar.temp', 'w');
             if f<0
                 error('Do you have write permissions for %s?', pwd);
             end
@@ -98,15 +96,15 @@ classdef progressBar < handle
                 percent=[];
                 return
             end
-            if ~exist(obj.fname, 'file')
-                error([obj.fname ' not found. It must have been deleted.']);
+            if ~exist('progressbar.temp', 'file')
+                error('progressbar.temp not found. It must have been deleted.');
             end
 
-            f = fopen(obj.fname, 'a');
+            f = fopen('progressbar.temp', 'a');
             fprintf(f, '1\n');
             fclose(f);
 
-            f = fopen(obj.fname, 'r');
+            f = fopen('progressbar.temp', 'r');
             progress = fscanf(f, '%d');
             fclose(f);
             percent = (length(progress)-1)/progress(1)*100;
@@ -120,7 +118,7 @@ classdef progressBar < handle
                 percent=[];
                 return
             end
-            delete(obj.fname);     
+            delete('progressbar.temp');     
             percent = 100;
 
             disp([repmat(char(8), 1, (obj.width+9+length(obj.pname))), newline, '100%[', repmat('=', 1, obj.width+1), ']',obj.pname,'. Executed in ',num2str(toc(obj.times)),'s.']);
