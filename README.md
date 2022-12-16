@@ -11,7 +11,7 @@ Matlab parfor work progress display program
 > p.stop; 
 
 Run the above code, the command line window will display: 
-> 100%[===========]UNNAMED PROGRESS. Executed in 1.2536s.
+> 100%[===========]UNNAMED PROGRESS. Executed in 1.0855s.
 
 
 With the optional parameter 'pname', you can add a name for each work process you want to see, for example
