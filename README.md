@@ -24,7 +24,7 @@ With the optional parameter 'pname', you can add a name for each work process yo
 > p.stop; 
 
 Run the above code, the command line window will display: 
-> 100%[===========]This is a test program. Executed in 1.2501s.
+> 100%[===========]This is a test program. Executed in 1.0536s.
 
 
 
