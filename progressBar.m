@@ -27,11 +27,12 @@
 
 classdef progressBar < handle
     %PROGRESSBAR Progress bar class for matlab loops which also works with parfor.
-    %   PROGRESSBAR works by creating a file called progressbar.temp in
-    %   your working directory, and then keeping track of the loop's
-    %   progress within that file. This workaround is necessary because parfor
-    %   workers cannot communicate with one another so there is no simple way
-    %   to know which iterations have finished and which haven't.
+    %   PROGRESSBAR works by using queue (if 'parallel.pool.DataQueue' is
+    %   available) or creating a file called progressbar.temp in your
+    %   working directory to keep track of the loop's progress.
+    %   This workaround is necessary because parfor workers cannot
+    %   communicate with one another so there is no simple way to know
+    %   which iterations have finished and which haven't.
     %
     % METHODS:  progressBar(N); constructs an object and initializes the progress monitor 
     %                           for a set of N upcoming calculations.
@@ -66,6 +67,19 @@ classdef progressBar < handle
         width
         times
         state
+        
+        N
+        UseQueue
+        Queue
+    end
+    
+    properties (SetAccess = private, GetAccess = public)
+        NCompletedTasks = 0 % (double) Number of completed tasks
+        ProgressPercent = 0 % (double) Current progress percentage
+    end
+    
+    properties (SetAccess = immutable, GetAccess = private, Transient)
+        Listener = [] % (event.listener) Listener for DataQueue updates.
     end
     
     methods
@@ -80,13 +94,21 @@ classdef progressBar < handle
             obj.pname=p.Results.pname;
             
             obj.width = 10; % Width of progress bar
-
-            f = fopen('progressbar.temp', 'w');
-            if f<0
-                error('Do you have write permissions for %s?', pwd);
+            obj.N=N;
+            obj.UseQueue = ~isempty(which('parallel.pool.DataQueue'));
+            if obj.UseQueue==1
+                % Initialize queue with listener.
+                obj.Queue = parallel.pool.DataQueue;
+                obj.Listener = obj.Queue.afterEach(@(x) obj.advance(x));
+            else
+                % Create temporary file that stores the number of completed tasks.
+                f = fopen('progressbar.temp', 'w');
+                if f<0
+                    error('Do you have write permissions for %s?', pwd);
+                end
+                fprintf(f, '%d\n', N);
+                fclose(f);
             end
-            fprintf(f, '%d\n', N);
-            fclose(f);
             obj.times=tic;
             disp(['  0%[>', repmat(' ', 1, obj.width), ']',obj.pname]); 
         end
@@ -96,21 +118,35 @@ classdef progressBar < handle
                 percent=[];
                 return
             end
-            if ~exist('progressbar.temp', 'file')
-                error('progressbar.temp not found. It must have been deleted.');
+
+            if obj.UseQueue==1
+                obj.Queue.send('');
+                
+                percent = obj.ProgressPercent*100;
+                perc = sprintf('%3.0f%%', percent); % 4 characters wide, percentage
+                disp([repmat(char(8), 1, (obj.width+9+length(obj.pname))), newline, perc,'[', repmat('=', 1, round(percent*obj.width/100)), '>', repmat(' ', 1, obj.width - round(percent*obj.width/100)), ']',obj.pname]); 
+            else
+                if ~exist('progressbar.temp', 'file')
+                    error('progressbar.temp not found. It must have been deleted.');
+                end
+                
+                f = fopen('progressbar.temp', 'a');
+                fprintf(f, '1\n');
+                fclose(f);
+                f = fopen('progressbar.temp', 'r');
+                progress = fscanf(f, '%d');
+                fclose(f);
+                
+                percent = (length(progress)-1)/progress(1)*100;
+                perc = sprintf('%3.0f%%', percent); % 4 characters wide, percentage
+                disp([repmat(char(8), 1, (obj.width+9+length(obj.pname))), newline, perc,'[', repmat('=', 1, round(percent*obj.width/100)), '>', repmat(' ', 1, obj.width - round(percent*obj.width/100)), ']',obj.pname]); 
             end
-
-            f = fopen('progressbar.temp', 'a');
-            fprintf(f, '1\n');
-            fclose(f);
-
-            f = fopen('progressbar.temp', 'r');
-            progress = fscanf(f, '%d');
-            fclose(f);
-            percent = (length(progress)-1)/progress(1)*100;
-
-            perc = sprintf('%3.0f%%', percent); % 4 characters wide, percentage
-            disp([repmat(char(8), 1, (obj.width+9+length(obj.pname))), newline, perc,'[', repmat('=', 1, round(percent*obj.width/100)), '>', repmat(' ', 1, obj.width - round(percent*obj.width/100)), ']',obj.pname]);         
+        end
+        
+        function advance(obj,~)
+            % Increment the number of completed tasks.
+            obj.NCompletedTasks = obj.NCompletedTasks+1;
+            obj.ProgressPercent = obj.NCompletedTasks/obj.N;
         end
         
         function percent = stop(obj)
@@ -118,10 +154,15 @@ classdef progressBar < handle
                 percent=[];
                 return
             end
-            delete('progressbar.temp');     
+            
             percent = 100;
-
-            disp([repmat(char(8), 1, (obj.width+9+length(obj.pname))), newline, '100%[', repmat('=', 1, obj.width+1), ']',obj.pname,'. Executed in ',num2str(toc(obj.times)),'s.']);
+            disp([repmat(char(8), 1, (obj.width+9+length(obj.pname))), newline, '100%[', repmat('=', 1, obj.width+1), ']',obj.pname,'. Executed in ',num2str(toc(obj.times)),'s. ']);
+            
+            if obj.UseQueue==1
+                delete(obj);
+            else
+                delete('progressbar.temp');
+            end
         end
     end
 end
