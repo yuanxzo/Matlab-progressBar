@@ -121,10 +121,6 @@ classdef progressBar < handle
 
             if obj.UseQueue==1
                 obj.Queue.send('');
-                
-                percent = obj.Percent*100;
-                perc = sprintf('%3.0f%%', percent); % 4 characters wide, percentage
-                disp([repmat(char(8), 1, (obj.width+9+length(obj.pname))), newline, perc,'[', repmat('=', 1, round(percent*obj.width/100)), '>', repmat(' ', 1, obj.width - round(percent*obj.width/100)), ']',obj.pname]); 
             else
                 if ~exist('progressbar.temp', 'file')
                     error('progressbar.temp not found. It must have been deleted.');
@@ -147,6 +143,10 @@ classdef progressBar < handle
             % Increment the number of completed tasks.
             obj.Completed = obj.Completed+1;
             obj.Percent = obj.Completed/obj.N;
+            
+            percent = obj.Percent*100;
+            perc = sprintf('%3.0f%%', percent); % 4 characters wide, percentage
+            disp([repmat(char(8), 1, (obj.width+9+length(obj.pname))), newline, perc,'[', repmat('=', 1, round(percent*obj.width/100)), '>', repmat(' ', 1, obj.width - round(percent*obj.width/100)), ']',obj.pname]); 
         end
         
         function percent = stop(obj)
