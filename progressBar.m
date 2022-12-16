@@ -74,12 +74,12 @@ classdef progressBar < handle
     end
     
     properties (SetAccess = private, GetAccess = public)
-        NCompletedTasks = 0 % (double) Number of completed tasks
-        ProgressPercent = 0 % (double) Current progress percentage
+        Completed = 0
+        Percent   = 0
     end
     
     properties (SetAccess = immutable, GetAccess = private, Transient)
-        Listener = [] % (event.listener) Listener for DataQueue updates.
+        Listener = []
     end
     
     methods
@@ -122,7 +122,7 @@ classdef progressBar < handle
             if obj.UseQueue==1
                 obj.Queue.send('');
                 
-                percent = obj.ProgressPercent*100;
+                percent = obj.Percent*100;
                 perc = sprintf('%3.0f%%', percent); % 4 characters wide, percentage
                 disp([repmat(char(8), 1, (obj.width+9+length(obj.pname))), newline, perc,'[', repmat('=', 1, round(percent*obj.width/100)), '>', repmat(' ', 1, obj.width - round(percent*obj.width/100)), ']',obj.pname]); 
             else
@@ -145,8 +145,8 @@ classdef progressBar < handle
         
         function advance(obj,~)
             % Increment the number of completed tasks.
-            obj.NCompletedTasks = obj.NCompletedTasks+1;
-            obj.ProgressPercent = obj.NCompletedTasks/obj.N;
+            obj.Completed = obj.Completed+1;
+            obj.Percent = obj.Completed/obj.N;
         end
         
         function percent = stop(obj)
