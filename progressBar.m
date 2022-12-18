@@ -110,7 +110,7 @@ classdef progressBar < handle
                 fclose(f);
             end
             obj.times=tic;
-            disp(['  0%[>', repmat(' ', 1, obj.width), ']',obj.pname]); 
+            disp(['  0.00%[>', repmat(' ', 1, obj.width), ']',obj.pname]); 
         end
         
         function percent = progress(obj)
@@ -134,8 +134,8 @@ classdef progressBar < handle
                 fclose(f);
                 
                 percent = (length(progress)-1)/progress(1)*100;
-                perc = sprintf('%3.0f%%', percent); % 4 characters wide, percentage
-                disp([repmat(char(8), 1, (obj.width+9+length(obj.pname))), newline, perc,'[', repmat('=', 1, round(percent*obj.width/100)), '>', repmat(' ', 1, obj.width - round(percent*obj.width/100)), ']',obj.pname]); 
+                perc = sprintf('%6.2f%%', percent); % 4 characters wide, percentage
+                disp([repmat(char(8), 1, (obj.width+12+length(obj.pname))), newline, perc,'[', repmat('=', 1, round(percent*obj.width/100)), '>', repmat(' ', 1, obj.width - round(percent*obj.width/100)), ']',obj.pname]); 
             end
         end
         
@@ -145,8 +145,8 @@ classdef progressBar < handle
             obj.Percent = obj.Completed/obj.N;
             
             percent = obj.Percent*100;
-            perc = sprintf('%3.0f%%', percent); % 4 characters wide, percentage
-            disp([repmat(char(8), 1, (obj.width+9+length(obj.pname))), newline, perc,'[', repmat('=', 1, round(percent*obj.width/100)), '>', repmat(' ', 1, obj.width - round(percent*obj.width/100)), ']',obj.pname]); 
+            perc = sprintf('%6.2f%%', percent); % 4 characters wide, percentage
+            disp([repmat(char(8), 1, (obj.width+12+length(obj.pname))), newline, perc,'[', repmat('=', 1, round(percent*obj.width/100)), '>', repmat(' ', 1, obj.width - round(percent*obj.width/100)), ']',obj.pname]); 
         end
         
         function percent = stop(obj)
@@ -156,7 +156,7 @@ classdef progressBar < handle
             end
             
             percent = 100;
-            disp([repmat(char(8), 1, (obj.width+9+length(obj.pname))), newline, '100%[', repmat('=', 1, obj.width+1), ']',obj.pname,'. Executed in ',num2str(toc(obj.times)),'s. ']);
+            disp([repmat(char(8), 1, (obj.width+12+length(obj.pname))), newline, '100.00%[', repmat('=', 1, obj.width+1), ']',obj.pname,'. Executed in ',num2str(toc(obj.times)),'s. ']);
             
             if obj.UseQueue==1
                 delete(obj);
