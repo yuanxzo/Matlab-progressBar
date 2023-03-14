@@ -57,7 +57,7 @@ classdef progressBar < handle
     %       percent = p.progress;
     %       percent = p.stop;
     %
-    % By: Bo Yang （b.yang@petalmail.com; https://github.com/yuanxzo/Matlab-progressBar）
+    % By: Bo Yang (seism.yang@foxmail.com; https://github.com/yuanxzo/Matlab-progressBar)
     %
     % Based on: ProgressBar written by Stefan Doerr;
     %           parfor_progress written by Jeremy Scheff    
