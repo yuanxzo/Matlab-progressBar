@@ -91,7 +91,7 @@ classdef progressBar < handle
             p = inputParser;
             addOptional(p,'pname','UNNAMED PROGRESS')  % progress name, must be a string, default is 'UNNAMED PROGRESS'
             p.parse(varargin{:});
-            obj.pname=p.Results.pname;
+            obj.pname=[p.Results.pname,'. Expected (s): ???', repmat(' ',1,27)];
             
             obj.width = 10; % Width of progress bar
             obj.N=N;
@@ -135,6 +135,8 @@ classdef progressBar < handle
                 
                 percent = (length(progress)-1)/progress(1)*100;
                 perc = sprintf('%6.2f%%', percent); % 4 characters wide, percentage
+                etime=toc(obj.times);etime=num2str(etime./obj.Percent*(1-obj.Percent));
+                obj.pname((end-29):(end-30+length(etime)))=etime;
                 disp([repmat(char(8), 1, (obj.width+12+length(obj.pname))), newline, perc,'[', repmat('=', 1, round(percent*obj.width/100)), '>', repmat(' ', 1, obj.width - round(percent*obj.width/100)), ']',obj.pname]); 
             end
         end
@@ -146,6 +148,9 @@ classdef progressBar < handle
             
             percent = obj.Percent*100;
             perc = sprintf('%6.2f%%', percent); % 4 characters wide, percentage
+
+            etime=toc(obj.times);etime=num2str(etime./obj.Percent*(1-obj.Percent));
+            obj.pname((end-29):(end-30+length(etime)))=etime;
             disp([repmat(char(8), 1, (obj.width+12+length(obj.pname))), newline, perc,'[', repmat('=', 1, round(percent*obj.width/100)), '>', repmat(' ', 1, obj.width - round(percent*obj.width/100)), ']',obj.pname]); 
         end
         
@@ -156,7 +161,9 @@ classdef progressBar < handle
             end
             
             percent = 100;
-            disp([repmat(char(8), 1, (obj.width+12+length(obj.pname))), newline, '100.00%[', repmat('=', 1, obj.width+1), ']',obj.pname,'. Executed in ',num2str(toc(obj.times)),'s. ']);
+            etime=num2str(toc(obj.times));
+            obj.pname((end-43):(end-30+length(etime)))=['Executed (s): ',etime];
+            disp([repmat(char(8), 1, (obj.width+12+length(obj.pname))), newline, '100.00%[', repmat('=', 1, obj.width+1), ']',obj.pname]);
             
             if obj.UseQueue==1
                 delete(obj);
